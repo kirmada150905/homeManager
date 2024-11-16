@@ -144,6 +144,7 @@ class _HomePageState extends State<HomePage> {
                     width: 75,
                     height: 75,
                     child: FloatingActionButton(
+                      
                       onPressed: () {
                         _showMyDialog(context).then((newRoomName) {
                           if (newRoomName != null && newRoomName.isNotEmpty) {
