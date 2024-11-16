@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_manager/screens/detailed_room_view.dart';
+import 'package:home_manager/screens/info_page.dart';
 import 'package:home_manager/screens/settings_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -14,25 +14,25 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, dynamic> jsonData = {"items": {}};
+  Map<String, dynamic> jsonData = {
+    "items": [
+      {"name": "Living Room"},
+      {"name": "Bedroom"},
+      {"name": "Kitchen"}
+    ]
+  };
 
   @override
   void initState() {
     super.initState();
-    // Load JSON data as soon as the page is created
     readJsonFile();
   }
 
   Future<void> readJsonFile() async {
     try {
-      // Load the JSON file as a string
       String jsonString = await rootBundle.loadString('assets/room_data.json');
-
-      // Parse the JSON string into a Dart object
       jsonData = jsonDecode(jsonString);
-      // Access data from the JSON
-      print('Items: ${jsonData['items']}');
-      setState(() {}); // Update the UI after loading the data
+      setState(() {});
     } catch (e) {
       print('Error reading JSON file: $e');
     }
@@ -40,19 +40,31 @@ class _HomePageState extends State<HomePage> {
 
   bool isDarkMode = false;
 
-  // Toggle dark mode and update state
   void toggleDarkMode(bool value) {
     setState(() {
       isDarkMode = value;
     });
   }
 
+  bool _viewKind = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("Home Page"),
         actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _viewKind = !_viewKind;
+              });
+            },
+            icon: _viewKind
+                ? const Icon(Icons.grid_view_rounded)
+                : const Icon(Icons.view_headline_sharp),
+          ),
           PopupMenuButton(
             itemBuilder: (context) => [
               const PopupMenuItem(value: 1, child: Text("Settings")),
@@ -64,10 +76,17 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) {
-                      return SettingsPage();
+                      return const SettingsPage();
                     },
                   ),
                 );
+              } else if (value == 2) {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const InfoPage();
+                }));
+              } else if (value == 3) {
+                Navigator.of(context).pop();
               }
             },
           )
@@ -78,30 +97,53 @@ class _HomePageState extends State<HomePage> {
           children: [
             jsonData.isNotEmpty
                 ? Expanded(
-                    child: ListView.builder(
-                      itemCount: jsonData["items"].length,
-                      itemBuilder: (context, index) {
-                        return RoomTile(room: jsonData["items"][index]);
-                      },
-                    ),
+                    child: _viewKind
+                        ? GridView.builder(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              crossAxisSpacing: 10.0,
+                              mainAxisSpacing: 10.0,
+                              childAspectRatio: 1.0,
+                            ),
+                            itemCount: jsonData["items"].length,
+                            itemBuilder: (context, index) {
+                              return RoomTile(
+                                room: jsonData["items"][index],
+                                viewKind: _viewKind,
+                                onDelete: () {
+                                  setState(() {
+                                    jsonData["items"].removeAt(index);
+                                  });
+                                },
+                              );
+                            },
+                          )
+                        : ListView.builder(
+                            itemCount: jsonData["items"].length,
+                            itemBuilder: (context, index) {
+                              return RoomTile(
+                                room: jsonData["items"][index],
+                                viewKind: _viewKind,
+                                onDelete: () {
+                                  setState(() {
+                                    jsonData["items"].removeAt(index);
+                                  });
+                                },
+                              );
+                            },
+                          ),
                   )
-                : const Text("click button to load"),
+                : const Text("Click button to load"),
             Container(
-              height: 250,
+              margin: EdgeInsets.only(right: 50, bottom: 50),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        readJsonFile().then((_) {
-                          setState(() {});
-                        });
-                      },
-                      child: const Text("reset"),
-                    ),
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
+                  SizedBox(
+                    width: 75,
+                    height: 75,
+                    child: FloatingActionButton(
                       onPressed: () {
                         _showMyDialog(context).then((newRoomName) {
                           if (newRoomName != null && newRoomName.isNotEmpty) {
@@ -111,12 +153,53 @@ class _HomePageState extends State<HomePage> {
                           }
                         });
                       },
-                      child: const Text("New Room"),
+                      mini: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
+            SizedBox(
+              height: 20,
+            )
+
+            // Container(
+            //   height: 250,
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: ElevatedButton(
+            //           onPressed: () {
+            //             readJsonFile().then((_) {
+            //               setState(() {});
+            //             });
+            //           },
+            //           child: const Text("Reset"),
+            //         ),
+            //       ),
+            //       Expanded(
+            //         child: ElevatedButton(
+            //           onPressed: () {
+            //             _showMyDialog(context).then((newRoomName) {
+            //               if (newRoomName != null && newRoomName.isNotEmpty) {
+            //                 setState(() {
+            //                   jsonData["items"].add({"name": newRoomName});
+            //                 });
+            //               }
+            //             });
+            //           },
+            //           child: const Text("New Room"),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),
@@ -126,7 +209,15 @@ class _HomePageState extends State<HomePage> {
 
 class RoomTile extends StatefulWidget {
   final Map<String, dynamic> room;
-  const RoomTile({super.key, required this.room});
+  final bool viewKind;
+  final VoidCallback onDelete;
+
+  const RoomTile({
+    super.key,
+    required this.room,
+    required this.viewKind,
+    required this.onDelete,
+  });
 
   @override
   State<RoomTile> createState() => _RoomTileState();
@@ -135,24 +226,70 @@ class RoomTile extends StatefulWidget {
 class _RoomTileState extends State<RoomTile> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => DetailedRoomView(room: widget.room)),
-        );
-      },
-      child: Card(
-        child: ListTile(
-          title: Text(widget.room["name"]),
-          trailing: IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.arrow_forward_ios),
-          ),
-        ),
-      ),
-    );
+    return widget.viewKind
+        ? GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailedRoomView(room: widget.room),
+                ),
+              );
+            },
+            child: Card(
+              elevation: 2,
+              margin: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.room["name"],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      IconButton(
+                        onPressed: widget.onDelete,
+                        icon: const Icon(Icons.delete, color: Colors.grey),
+                      ),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          )
+        : GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DetailedRoomView(room: widget.room),
+                ),
+              );
+            },
+            child: Card(
+              child: ListTile(
+                title: Text(widget.room["name"]),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      onPressed: widget.onDelete,
+                      icon: const Icon(Icons.delete, color: Colors.grey),
+                    ),
+                    const Icon(Icons.arrow_forward_ios),
+                  ],
+                ),
+              ),
+            ),
+          );
   }
 }
 
@@ -161,7 +298,7 @@ Future<String?> _showMyDialog(BuildContext context) async {
 
   return showDialog<String>(
     context: context,
-    barrierDismissible: false, // Prevent dismiss by tapping outside
+    barrierDismissible: false,
     builder: (BuildContext context) {
       return AlertDialog(
         title: const Text('Add new room'),
@@ -169,7 +306,7 @@ Future<String?> _showMyDialog(BuildContext context) async {
           child: ListBody(
             children: <Widget>[
               TextField(
-                controller: roomNameController, // Attach the controller here
+                controller: roomNameController,
                 decoration:
                     const InputDecoration(helperText: "Enter Room Name"),
               ),
@@ -180,14 +317,13 @@ Future<String?> _showMyDialog(BuildContext context) async {
           TextButton(
             child: const Text('Approve'),
             onPressed: () {
-              Navigator.of(context)
-                  .pop(roomNameController.text); // Pass back the text
+              Navigator.of(context).pop(roomNameController.text);
             },
           ),
           TextButton(
             child: const Text('Cancel'),
             onPressed: () {
-              Navigator.of(context).pop(null); // Return null if cancelled
+              Navigator.of(context).pop(null);
             },
           ),
         ],

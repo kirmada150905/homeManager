@@ -1,61 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:home_manager/main.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  bool isDarkMode = false;
-
-  // Function to change dark mode state
-  void toggleDarkMode(bool value) {
-    setState(() {
-      isDarkMode = value;
-    });
-  }
-
-  // Function to reset settings
-  void resetSettings() {
-    setState(() {
-      isDarkMode = false;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Provider.of<ThemeNotifier>(context).isDarkMode;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.restore),
-            onPressed: () {
-              // Reset settings when the icon is pressed
-              resetSettings();
-            },
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView(
+        child: Column(
           children: [
-            // Dark mode toggle
             SwitchListTile(
               title: const Text('Dark Mode'),
               value: isDarkMode,
-              onChanged: toggleDarkMode,
-            ),
-            // Reset settings button
-            ElevatedButton(
-              onPressed: resetSettings,
-              child: const Text('Reset Settings'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
+              onChanged: (value) {
+                Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
+              },
             ),
           ],
         ),

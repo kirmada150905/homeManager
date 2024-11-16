@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:home_manager/screens/home_page.dart';
+import 'package:home_manager/screens/login_screen.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+class ThemeNotifier extends ChangeNotifier {
+  bool _isDarkMode = false;
+
+  bool get isDarkMode => _isDarkMode;
+
+  void toggleTheme() {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+  }
 }
 
-class MyApp extends StatefulWidget {
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeNotifier(),
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  bool isDarkMode = false;
-
-  // Toggle dark mode and update state
-  void toggleDarkMode(bool value) {
-    setState(() {
-      isDarkMode = value;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    bool isDarkMode = Provider.of<ThemeNotifier>(context).isDarkMode;
+
     return MaterialApp(
-      home: HomePage(),
       theme: ThemeData(
-        brightness: isDarkMode ? Brightness.dark : Brightness.light,
-        colorScheme: ColorScheme.fromSeed(
-          primary: Colors.black,
-          seedColor: Colors.black,
-        ),
-      ),
+          brightness: isDarkMode ? Brightness.dark : Brightness.light,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue)),
+      home: LoginScreen(),
     );
   }
 }
