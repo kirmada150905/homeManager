@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_manager/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:home_manager/main.dart';
 
@@ -7,7 +8,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode = Provider.of<ThemeNotifier>(context).isDarkMode;
+    bool isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
 
     return Scaffold(
       appBar: AppBar(
@@ -21,7 +22,7 @@ class SettingsPage extends StatelessWidget {
               title: const Text('Dark Mode'),
               value: isDarkMode,
               onChanged: (value) {
-                Provider.of<ThemeNotifier>(context, listen: false).toggleTheme();
+                Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
               },
             ),
           ],
