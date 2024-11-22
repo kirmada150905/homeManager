@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:home_manager/screens/detailed_room_view.dart';
 import 'package:home_manager/screens/info_page.dart';
 import 'package:home_manager/screens/settings_page.dart';
@@ -15,7 +14,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, dynamic> jsonData = {};
+  Map<String, dynamic> jsonData = {
+    "items": [
+      {"name": "Living room"}
+    ]
+  };
 
   @override
   void initState() {
@@ -25,7 +28,15 @@ class _HomePageState extends State<HomePage> {
 
   //port 8080
   Future<http.Response> getData() {
-    return http.get(Uri.parse('http://127.0.0.1:8080'));
+    return http.get(Uri.parse('http://127.0.0.1:8080/getData'));
+  }
+
+  Future<http.Response> sendData() {
+    return http.post(Uri.parse("http://127.0.0.1:8080/postData"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(jsonData));
   }
 
   Future<void> readJsonFile() async {
@@ -36,11 +47,13 @@ class _HomePageState extends State<HomePage> {
       if (response.statusCode == 200) {
         jsonData = jsonDecode(response.body);
         setState(() {});
-      } else {
-        print('Failed to load data: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error reading JSON file: $e');
+      jsonData = {
+        "items": [
+          {"name": "Living room"}
+        ]
+      };
     }
   }
 
@@ -155,6 +168,7 @@ class _HomePageState extends State<HomePage> {
                           if (newRoomName != null && newRoomName.isNotEmpty) {
                             setState(() {
                               jsonData["items"].add({"name": newRoomName});
+                              sendData();
                             });
                           }
                         });
@@ -174,38 +188,6 @@ class _HomePageState extends State<HomePage> {
             SizedBox(
               height: 20,
             )
-
-            // Container(
-            //   height: 250,
-            //   child: Row(
-            //     children: [
-            //       Expanded(
-            //         child: ElevatedButton(
-            //           onPressed: () {
-            //             readJsonFile().then((_) {
-            //               setState(() {});
-            //             });
-            //           },
-            //           child: const Text("Reset"),
-            //         ),
-            //       ),
-            //       Expanded(
-            //         child: ElevatedButton(
-            //           onPressed: () {
-            //             _showMyDialog(context).then((newRoomName) {
-            //               if (newRoomName != null && newRoomName.isNotEmpty) {
-            //                 setState(() {
-            //                   jsonData["items"].add({"name": newRoomName});
-            //                 });
-            //               }
-            //             });
-            //           },
-            //           child: const Text("New Room"),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
           ],
         ),
       ),
@@ -321,7 +303,7 @@ Future<String?> _showMyDialog(BuildContext context) async {
         ),
         actions: <Widget>[
           TextButton(
-            child: const Text('Approve'),
+            child: Text('Approve'),
             onPressed: () {
               Navigator.of(context).pop(roomNameController.text);
             },
