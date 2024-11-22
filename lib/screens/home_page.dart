@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<http.Response> sendData() {
-    return http.post(Uri.parse("http://127.0.0.1:8080/postData"),
+    return http.post(Uri.parse("http://127.0.0.1:8080/add_new_room"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -165,12 +165,10 @@ class _HomePageState extends State<HomePage> {
                     child: FloatingActionButton(
                       onPressed: () {
                         _showMyDialog(context).then((newRoomName) {
-                          if (newRoomName != null && newRoomName.isNotEmpty) {
-                            setState(() {
-                              jsonData["items"].add({"name": newRoomName});
-                              sendData();
-                            });
-                          }
+                          setState(() {
+                            jsonData["items"].add({"name": newRoomName});
+                            sendData();
+                          });
                         });
                       },
                       mini: true,
@@ -283,7 +281,6 @@ class _RoomTileState extends State<RoomTile> {
 
 Future<String?> _showMyDialog(BuildContext context) async {
   TextEditingController roomNameController = TextEditingController();
-
   return showDialog<String>(
     context: context,
     barrierDismissible: false,

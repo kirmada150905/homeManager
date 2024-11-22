@@ -1,4 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+Future<http.Response> send_room_data(
+    Map<String, dynamic> room, Map<String, dynamic> appliances) async {
+  room["appliances"] = appliances;
+  print(room["appliances"]);
+  return http.post(Uri.parse("http://127.0.0.1:8080/update_room_data"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(room));
+}
 
 class DetailedRoomView extends StatefulWidget {
   final Map<String, dynamic> room;
@@ -15,7 +28,6 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
   @override
   void initState() {
     super.initState();
-    // Ensure appliances map is initialized
     appliances = widget.room["appliances"] ?? {};
   }
 
@@ -23,6 +35,13 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+              onPressed: () {
+                send_room_data(widget.room, appliances);
+              },
+              icon: Icon(Icons.save))
+        ],
         title: Text(widget.room["name"]),
       ),
       body: Column(
@@ -36,6 +55,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                       var appliance = appliances[applianceName];
                       if (appliance.runtimeType == int) {
                         return SwitchAppliance(
+                          room: widget.room,
                           appliance: {applianceName: appliance},
                           onDelete: () => _deleteAppliance(applianceName),
                         );
@@ -57,9 +77,8 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     side: BorderSide(
-                      color: Colors
-                          .blue, // Change this to your desired border color
-                      width: 2.0, // Change this to set the border width
+                      color: Colors.blue,
+                      width: 2.0,
                     ),
                   ),
                   child: const Text("Add Appliance"),
@@ -70,23 +89,14 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                         int controlType = result["controlType"];
 
                         setState(() {
-                          appliances[applianceName] = controlType == 1
-                              ? 1
-                              : {"temp": 20}; // Switch or Slider
+                          appliances[applianceName] =
+                              controlType == 1 ? 1 : {"temp": 20};
                         });
                       }
                     });
                   },
                 ),
                 const SizedBox(width: 20),
-                // ElevatedButton(
-                //   onPressed: () {
-                //     setState(() {
-                //       appliances.clear();
-                //     });
-                //   },
-                //   child: const Text("Delete All"),
-                // ),
               ],
             ),
           ),
@@ -126,11 +136,13 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
 }
 
 class SwitchAppliance extends StatefulWidget {
+  final Map<String, dynamic> room;
   final Map<String, int> appliance;
   final VoidCallback onDelete;
 
   const SwitchAppliance({
     super.key,
+    required this.room,
     required this.appliance,
     required this.onDelete,
   });
@@ -157,6 +169,8 @@ class _SwitchApplianceState extends State<SwitchAppliance> {
                   state = value;
                   widget.appliance[widget.appliance.keys.toList()[0]] =
                       value ? 1 : 0;
+                  print(widget.appliance);
+                  send_room_data(widget.room, widget.appliance);
                 });
               },
             ),
