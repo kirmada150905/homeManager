@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_manager/screens/home_page.dart';
 import 'package:home_manager/screens/login_screen.dart';
 import 'package:home_manager/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
           ? ThemeData.from(colorScheme: ColorScheme.dark(primary: Colors.blue))
           : ThemeData.from(
               colorScheme: ColorScheme.light(primary: Colors.blue)),
-      home: LoginScreen(),
+      home: HomePage(),
     );
   }
 }

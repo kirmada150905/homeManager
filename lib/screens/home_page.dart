@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:home_manager/screens/detailed_room_view.dart';
 import 'package:home_manager/screens/info_page.dart';
 import 'package:home_manager/screens/settings_page.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,13 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Map<String, dynamic> jsonData = {
-    "items": [
-      {"name": "Living Room"},
-      {"name": "Bedroom"},
-      {"name": "Kitchen"}
-    ]
-  };
+  Map<String, dynamic> jsonData = {};
 
   @override
   void initState() {
@@ -28,11 +23,21 @@ class _HomePageState extends State<HomePage> {
     readJsonFile();
   }
 
+  Future<http.Response> getData() {
+    return http.get(Uri.parse('http://127.0.0.1:8080'));
+  }
+
   Future<void> readJsonFile() async {
     try {
-      String jsonString = await rootBundle.loadString('assets/room_data.json');
-      jsonData = jsonDecode(jsonString);
-      setState(() {});
+      // Fetch the data from the server
+      final response = await getData();
+
+      if (response.statusCode == 200) {
+        jsonData = jsonDecode(response.body);
+        setState(() {});
+      } else {
+        print('Failed to load data: ${response.statusCode}');
+      }
     } catch (e) {
       print('Error reading JSON file: $e');
     }
@@ -144,7 +149,6 @@ class _HomePageState extends State<HomePage> {
                     width: 75,
                     height: 75,
                     child: FloatingActionButton(
-                      
                       onPressed: () {
                         _showMyDialog(context).then((newRoomName) {
                           if (newRoomName != null && newRoomName.isNotEmpty) {
