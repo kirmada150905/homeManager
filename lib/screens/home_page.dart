@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
     readJsonFile();
   }
 
+  //port 8080
   Future<http.Response> getData() {
     return http.get(Uri.parse('http://127.0.0.1:8080'));
   }
