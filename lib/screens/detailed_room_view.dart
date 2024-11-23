@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-Future<http.Response> send_room_data(
-    Map<String, dynamic> room, Map<String, dynamic> appliances) async {
-  room["appliances"] = appliances;
-  print(room["appliances"]);
+Future<http.Response> _sendRoomData(Map<String, dynamic> room) async {
   return http.post(Uri.parse("http://127.0.0.1:8080/update_room_data"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -38,7 +36,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
         actions: [
           IconButton(
               onPressed: () {
-                send_room_data(widget.room, appliances);
+                _sendRoomData(widget.room);
               },
               icon: Icon(Icons.save))
         ],
@@ -169,8 +167,9 @@ class _SwitchApplianceState extends State<SwitchAppliance> {
                   state = value;
                   widget.appliance[widget.appliance.keys.toList()[0]] =
                       value ? 1 : 0;
-                  print(widget.appliance);
-                  send_room_data(widget.room, widget.appliance);
+                  widget.room["appliances"][widget.appliance.keys.toList()[0]] =
+                      value ? 1 : 0;
+                  _sendRoomData(widget.room);
                 });
               },
             ),
