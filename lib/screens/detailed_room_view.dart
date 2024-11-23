@@ -36,6 +36,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
         actions: [
           IconButton(
               onPressed: () {
+                print(widget.room);
                 _sendRoomData(widget.room);
               },
               icon: Icon(Icons.save))
@@ -140,11 +141,11 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
 }
 
 class SwitchAppliance extends StatefulWidget {
-  final Map<String, dynamic> room;
-  final Map<String, int> appliance;
+  Map<String, dynamic> room = {};
+  Map<String, int> appliance = {};
   final VoidCallback onDelete;
 
-  const SwitchAppliance({
+  SwitchAppliance({
     super.key,
     required this.room,
     required this.appliance,
@@ -173,8 +174,12 @@ class _SwitchApplianceState extends State<SwitchAppliance> {
                   state = value;
                   widget.appliance[widget.appliance.keys.toList()[0]] =
                       value ? 1 : 0;
+                  if (widget.room["appliances"] == null) {
+                    widget.room["appliances"] = {};
+                  }
                   widget.room["appliances"][widget.appliance.keys.toList()[0]] =
                       value ? 1 : 0;
+                  print(widget.room);
                   _sendRoomData(widget.room);
                 });
               },
