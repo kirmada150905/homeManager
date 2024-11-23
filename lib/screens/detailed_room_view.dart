@@ -59,6 +59,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                         );
                       } else {
                         return SliderAppliance(
+                          room: widget.room,
                           appliance: {applianceName: appliance},
                           onDelete: () => _deleteAppliance(applianceName),
                         );
@@ -185,11 +186,14 @@ class _SwitchApplianceState extends State<SwitchAppliance> {
 }
 
 class SliderAppliance extends StatefulWidget {
+  final Map<String, dynamic> room;
+
   final Map<String, dynamic> appliance;
   final VoidCallback onDelete;
 
   const SliderAppliance({
     super.key,
+    required this.room,
     required this.appliance,
     required this.onDelete,
   });
@@ -199,10 +203,12 @@ class SliderAppliance extends StatefulWidget {
 }
 
 class _SliderApplianceState extends State<SliderAppliance> {
-  double currentSliderValue = 20;
-
+  // double currentSliderValue = 20;
   @override
   Widget build(BuildContext context) {
+    double currentSliderValue = double.parse(
+        (widget.appliance[widget.appliance.keys.toList()[0]]["temp"])
+            .toString());
     return Column(
       children: [
         Card(
@@ -219,6 +225,9 @@ class _SliderApplianceState extends State<SliderAppliance> {
                   widget.appliance[widget.appliance.keys.toList()[0]] = {
                     "temp": currentSliderValue
                   };
+                  widget.room["appliances"][widget.appliance.keys.toList()[0]] =
+                      {"temp": currentSliderValue};
+                  _sendRoomData(widget.room);
                 });
               },
             ),
