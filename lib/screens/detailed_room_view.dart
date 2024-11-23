@@ -55,13 +55,17 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                         return SwitchAppliance(
                           room: widget.room,
                           appliance: {applianceName: appliance},
-                          onDelete: () => _deleteAppliance(applianceName),
+                          onDelete: () {
+                            _deleteAppliance(applianceName);
+                          },
                         );
                       } else {
                         return SliderAppliance(
                           room: widget.room,
                           appliance: {applianceName: appliance},
-                          onDelete: () => _deleteAppliance(applianceName),
+                          onDelete: () {
+                            _deleteAppliance(applianceName);
+                          },
                         );
                       }
                     },
@@ -122,7 +126,8 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
               child: const Text('Delete'),
               onPressed: () {
                 setState(() {
-                  appliances.remove(applianceName);
+                  widget.room["appliances"].remove(applianceName);
+                  _sendRoomData(widget.room);
                 });
                 Navigator.of(context).pop();
               },

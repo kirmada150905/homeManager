@@ -133,6 +133,7 @@ class _HomePageState extends State<HomePage> {
                                 onDelete: () {
                                   setState(() {
                                     jsonData["items"].removeAt(index);
+                                    sendData();
                                   });
                                 },
                               );
@@ -147,6 +148,8 @@ class _HomePageState extends State<HomePage> {
                                 onDelete: () {
                                   setState(() {
                                     jsonData["items"].removeAt(index);
+                                    print(jsonData);
+                                    sendData();
                                   });
                                 },
                               );
