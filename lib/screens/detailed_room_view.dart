@@ -163,7 +163,10 @@ class _SwitchApplianceState extends State<SwitchAppliance> {
         widget.appliance[widget.appliance.keys.toList()[0]] == 1 ? true : false;
     return Card(
       child: ListTile(
-        title: Text(widget.appliance.keys.toList()[0]),
+        title: Text(
+          widget.appliance.keys.toList()[0],
+          style: TextStyle(fontSize: 15),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -212,7 +215,6 @@ class SliderAppliance extends StatefulWidget {
 }
 
 class _SliderApplianceState extends State<SliderAppliance> {
-  // double currentSliderValue = 20;
   @override
   Widget build(BuildContext context) {
     double currentSliderValue = double.parse(
@@ -222,7 +224,10 @@ class _SliderApplianceState extends State<SliderAppliance> {
       children: [
         Card(
           child: ListTile(
-            leading: Text(widget.appliance.keys.toList()[0]),
+            leading: Text(
+              '${widget.appliance.keys.toList()[0]}: ${currentSliderValue.toInt()}°',
+              style: TextStyle(fontSize: 15),
+            ),
             title: Slider(
               value: currentSliderValue,
               max: 100,

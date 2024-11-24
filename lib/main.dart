@@ -19,11 +19,30 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
     return MaterialApp.router(
-      routerConfig: go_router,
-      theme: isDarkMode
-          ? ThemeData.from(colorScheme: ColorScheme.dark(primary: Colors.blue))
-          : ThemeData.from(
-              colorScheme: ColorScheme.light(primary: Colors.blue)),
-    );
+        routerConfig: go_router,
+        theme: isDarkMode
+            ? ThemeData.from(
+                colorScheme: ColorScheme.dark(primary: Colors.blue),
+              ).copyWith(
+                cardTheme: CardTheme(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.white, width: 0.5),
+                  ),
+                  elevation: 5,
+                ),
+              )
+            : ThemeData.from(
+                colorScheme: ColorScheme.light(primary: Colors.blueAccent),
+              ).copyWith(
+                cardTheme: CardTheme(
+                  color: const Color.fromARGB(250, 255, 254, 254),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.blueAccent, width: 0.5),
+                  ),
+                  elevation: 5,
+                ),
+              ));
   }
 }

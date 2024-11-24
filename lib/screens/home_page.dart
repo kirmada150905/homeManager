@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> readJsonFile() async {
     try {
-      // Fetch the data from the server
       final response = await getData();
 
       if (response.statusCode == 200) {
@@ -73,15 +72,14 @@ class _HomePageState extends State<HomePage> {
         title: const Text("Home Page"),
         actions: [
           IconButton(
-            onPressed: () {
-              setState(() {
-                _viewKind = !_viewKind;
-              });
-            },
-            icon: _viewKind
-                ? const Icon(Icons.grid_view_rounded)
-                : const Icon(Icons.view_headline_sharp),
-          ),
+              onPressed: () {
+                setState(() {
+                  _viewKind = !_viewKind;
+                });
+              },
+              icon: _viewKind
+                  ? const Icon(Icons.view_headline_sharp)
+                  : const Icon(Icons.grid_view_rounded)),
           PopupMenuButton(
             itemBuilder: (context) => [
               const PopupMenuItem(value: 1, child: Text("Settings")),
@@ -103,30 +101,36 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: Column(
           children: [
+            SizedBox(
+              height: 15,
+            ),
             jsonData.isNotEmpty
                 ? Expanded(
                     child: _viewKind
-                        ? GridView.builder(
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 3,
-                              crossAxisSpacing: 10.0,
-                              mainAxisSpacing: 10.0,
-                              childAspectRatio: 1.0,
+                        ? Container(
+                            margin: EdgeInsets.all(10),
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 10.0,
+                                mainAxisSpacing: 10.0,
+                                childAspectRatio: 1.0,
+                              ),
+                              itemCount: jsonData["items"].length,
+                              itemBuilder: (context, index) {
+                                return RoomTile(
+                                  room: jsonData["items"][index],
+                                  viewKind: _viewKind,
+                                  onDelete: () {
+                                    setState(() {
+                                      jsonData["items"].removeAt(index);
+                                      sendData();
+                                    });
+                                  },
+                                );
+                              },
                             ),
-                            itemCount: jsonData["items"].length,
-                            itemBuilder: (context, index) {
-                              return RoomTile(
-                                room: jsonData["items"][index],
-                                viewKind: _viewKind,
-                                onDelete: () {
-                                  setState(() {
-                                    jsonData["items"].removeAt(index);
-                                    sendData();
-                                  });
-                                },
-                              );
-                            },
                           )
                         : ListView.builder(
                             itemCount: jsonData["items"].length,
@@ -213,16 +217,18 @@ class _RoomTileState extends State<RoomTile> {
             },
             child: Card(
               elevation: 2,
-              margin: const EdgeInsets.all(8.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    widget.room["name"],
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      widget.room["name"],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -244,18 +250,21 @@ class _RoomTileState extends State<RoomTile> {
             onTap: () {
               context.push('/detailed_room_view', extra: widget.room);
             },
-            child: Card(
-              child: ListTile(
-                title: Text(widget.room["name"]),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: widget.onDelete,
-                      icon: const Icon(Icons.delete, color: Colors.grey),
-                    ),
-                    const Icon(Icons.arrow_forward_ios),
-                  ],
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              child: Card(
+                child: ListTile(
+                  title: Text(widget.room["name"]),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        onPressed: widget.onDelete,
+                        icon: const Icon(Icons.delete, color: Colors.grey),
+                      ),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
+                  ),
                 ),
               ),
             ),
