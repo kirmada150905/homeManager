@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:home_manager/screens/home_page.dart';
-import 'package:home_manager/screens/sing_up_screen.dart';
+import 'package:go_router/go_router.dart';
+
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -82,11 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   );
                   _usernameController.text = "";
                   _passwordController.text = "";
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => const HomePage(),
-                    ),
-                  );
+                  context.go('/');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Invalid credentials')),
@@ -113,8 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text("Don't have an Account?"),
                 TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => SignUpScreen()));
+                      context.go('/sign_up');
                     },
                     child: Text("Sign Up"))
               ],

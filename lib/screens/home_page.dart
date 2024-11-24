@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:home_manager/screens/detailed_room_view.dart';
-import 'package:home_manager/screens/info_page.dart';
-import 'package:home_manager/screens/settings_page.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -92,20 +90,11 @@ class _HomePageState extends State<HomePage> {
             ],
             onSelected: (value) {
               if (value == 1) {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return const SettingsPage();
-                    },
-                  ),
-                );
+                (context).push('/settings');
               } else if (value == 2) {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return const InfoPage();
-                }));
+                (context).push('/info_page');
               } else if (value == 3) {
-                Navigator.of(context).pop();
+                (context).go('/login');
               }
             },
           )
@@ -169,8 +158,10 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         _showMyDialog(context).then((newRoomName) {
                           setState(() {
-                            jsonData["items"].add({"name": newRoomName});
-                            sendData();
+                            if (newRoomName != null) {
+                              jsonData["items"].add({"name": newRoomName});
+                              sendData();
+                            }
                           });
                         });
                       },
@@ -218,12 +209,7 @@ class _RoomTileState extends State<RoomTile> {
     return widget.viewKind
         ? GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailedRoomView(room: widget.room),
-                ),
-              );
+              context.push('/detailed_room_view', extra: widget.room);
             },
             child: Card(
               elevation: 2,
@@ -256,12 +242,7 @@ class _RoomTileState extends State<RoomTile> {
           )
         : GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DetailedRoomView(room: widget.room),
-                ),
-              );
+              context.push('/detailed_room_view', extra: widget.room);
             },
             child: Card(
               child: ListTile(

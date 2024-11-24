@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -120,7 +120,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
             TextButton(
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
             TextButton(
@@ -130,7 +130,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                   widget.room["appliances"].remove(applianceName);
                   _sendRoomData(widget.room);
                 });
-                Navigator.of(context).pop();
+                (context).pop();
               },
             ),
           ],
@@ -179,7 +179,6 @@ class _SwitchApplianceState extends State<SwitchAppliance> {
                   }
                   widget.room["appliances"][widget.appliance.keys.toList()[0]] =
                       value ? 1 : 0;
-                  print(widget.room);
                   _sendRoomData(widget.room);
                 });
               },
@@ -231,6 +230,9 @@ class _SliderApplianceState extends State<SliderAppliance> {
               label: currentSliderValue.round().toString(),
               onChanged: (double value) {
                 setState(() {
+                  if (widget.room["appliances"] == null) {
+                    widget.room["appliances"] = {};
+                  }
                   currentSliderValue = value;
                   widget.appliance[widget.appliance.keys.toList()[0]] = {
                     "temp": currentSliderValue

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_manager/screens/home_page.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -75,9 +75,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               onPressed: () {
                 if (_usernameController.text != "" &&
                     _passwordController.text != "") {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => HomePage()));
+                  context.go('/');
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -105,7 +103,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 Text("Already have an Account?"),
                 TextButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    context.pop();
                   },
                   child: Text("Log In"),
                 ),

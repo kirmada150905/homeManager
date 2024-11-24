@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_manager/theme_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:home_manager/main.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -22,7 +21,8 @@ class SettingsPage extends StatelessWidget {
               title: const Text('Dark Mode'),
               value: isDarkMode,
               onChanged: (value) {
-                Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+                Provider.of<ThemeProvider>(context, listen: false)
+                    .toggleTheme();
               },
             ),
           ],

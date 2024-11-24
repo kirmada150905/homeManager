@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_manager/screens/home_page.dart';
-import 'package:home_manager/screens/login_screen.dart';
+import 'package:home_manager/go_router.dart';
 import 'package:home_manager/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -19,13 +18,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     bool isDarkMode = Provider.of<ThemeProvider>(context).isDarkMode;
-
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: go_router,
       theme: isDarkMode
           ? ThemeData.from(colorScheme: ColorScheme.dark(primary: Colors.blue))
           : ThemeData.from(
               colorScheme: ColorScheme.light(primary: Colors.blue)),
-      home: HomePage(),
     );
   }
 }
