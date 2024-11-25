@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_manager/main.dart';
 import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
@@ -26,11 +27,11 @@ class _HomePageState extends State<HomePage> {
 
   //port 8080
   Future<http.Response> getData() {
-    return http.get(Uri.parse('http://127.0.0.1:8080/getData'));
+    return http.get(Uri.parse('http://${server}/getData'));
   }
 
   Future<http.Response> sendData() {
-    return http.post(Uri.parse("http://127.0.0.1:8080/add_new_room"),
+    return http.post(Uri.parse("http://${server}add_new_room"),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -149,7 +150,7 @@ class _HomePageState extends State<HomePage> {
                             },
                           ),
                   )
-                : const Text("Click button to load"),
+                : const Text("Rrefersh"),
             Container(
               margin: EdgeInsets.only(right: 50, bottom: 50),
               child: Row(
@@ -220,15 +221,12 @@ class _RoomTileState extends State<RoomTile> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Text(
-                      widget.room["name"],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    widget.room["name"],
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 10),

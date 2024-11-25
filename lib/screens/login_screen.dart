@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_manager/main.dart';
+import 'package:http/http.dart' as http;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -72,16 +75,25 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 String username = _usernameController.text;
                 String password = _passwordController.text;
                 if (username == 'user' && password == 'password') {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Login successful!')),
-                  );
-                  _usernameController.text = "";
-                  _passwordController.text = "";
-                  context.go('/');
+                  final res =
+                      await http.get(Uri.parse('http://${server}//getData'));
+                  if (res.statusCode == HttpStatus.ok) {
+                    print(res.statusCode);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Login successful!')),
+                    );
+                    _usernameController.text = "";
+                    _passwordController.text = "";
+                    context.go('/');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Server Not Reachable!!')),
+                    );
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Invalid credentials')),
@@ -96,7 +108,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: const Text(
                 'Login',
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18,)
               ),
             ),
             SizedBox(

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_manager/main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 Future<http.Response> _sendRoomData(Map<String, dynamic> room) async {
-  return http.post(Uri.parse("http://127.0.0.1:8080/update_room_data"),
+  return http.post(Uri.parse('http://${server}/update_room_data'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -33,14 +34,6 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        actions: [
-          IconButton(
-              onPressed: () {
-                print(widget.room);
-                _sendRoomData(widget.room);
-              },
-              icon: Icon(Icons.save))
-        ],
         title: Text(widget.room["name"]),
       ),
       body: Column(
@@ -91,10 +84,10 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
                       if (result != null) {
                         String applianceName = result["name"];
                         int controlType = result["controlType"];
-
                         setState(() {
                           appliances[applianceName] =
                               controlType == 1 ? 1 : {"temp": 20};
+                          _sendRoomData(widget.room);
                         });
                       }
                     });
@@ -140,6 +133,7 @@ class _DetailedRoomViewState extends State<DetailedRoomView> {
   }
 }
 
+// ignore: must_be_immutable
 class SwitchAppliance extends StatefulWidget {
   Map<String, dynamic> room = {};
   Map<String, int> appliance = {};
